@@ -1,34 +1,21 @@
-\# Skill Demand Analyzer
+# SkillMirror
 
+## Objective
 
+Compare a student's learning progress with internship market requirements and generate a personalized skill-gap report.
 
-\## Objective
+## Features
 
-Analyze internship and job market trends using Information Retrieval and Machine Learning.
+- Internship data collection
+- Student learning log analysis
+- Skill gap detection
+- TF-IDF based skill matching
+- ML-based career classification
 
+## Technologies
 
-
-\## Features
-
-\- Data collection from multiple job websites
-
-\- Skill demand analysis
-
-\- TF-IDF based job search
-
-\- Job category prediction
-
-
-
-\## Technologies
-
-\- Python
-
-\- Pandas
-
-\- BeautifulSoup
-
-\- Scikit-Learn
-
-\- Streamlit
-
+- Python
+- Pandas
+- BeautifulSoup
+- Scikit-Learn
+- Streamlit
