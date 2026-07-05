@@ -18,11 +18,15 @@ def search(query, df, vectorizer, tfidf_matrix, top_n=5):
     results = []
     for idx in top_indices:
         results.append({
-            'job_title':    df.iloc[idx]['job_title'],
-            'company_name': df.iloc[idx]['company_name'],
-            'score':        round(float(scores[idx]), 4),
-            'job_url':      df.iloc[idx]['job_url'],
-            'skills':       df.iloc[idx]['skills_required']
+            'job_title':      df.iloc[idx]['job_title'],
+            'company_name':   df.iloc[idx]['company_name'],
+            'location':       df.iloc[idx]['location'],
+            'experience_raw': df.iloc[idx]['experience_raw'],
+            'work_mode':      df.iloc[idx]['work_mode'],
+            'company_rating': df.iloc[idx]['company_rating'],
+            'score':          round(float(scores[idx]) * 100, 2),
+            'job_url':        df.iloc[idx]['job_url'],
+            'skills_required': df.iloc[idx]['skills_required']
         })
 
     return results
