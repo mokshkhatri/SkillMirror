@@ -1,27 +1,23 @@
 import pandas as pd
 import re
 
-
-# -------------------------------
-# Load datasets
-# -------------------------------
+# ---------------------------------
+# Load Datasets
+# ---------------------------------
 
 jobs = pd.read_csv("data/skills_ready_jobs.csv")
 logs = pd.read_csv("data/user_logs.csv")
 technical_skills = pd.read_csv("data/technical_skills.csv")
 
-# -------------------------------
-# Get all market skills
-# -------------------------------
+
+# ---------------------------------
+# Load Market Skills
+# ---------------------------------
+
 def load_market_skills():
-    """
-    Load only valid technical skills from the jobs dataset.
-    Any word not present in technical_skills.csv is ignored.
-    """
 
     market_skills = set()
 
-    # Load approved technical skills
     valid_skills = set(
         technical_skills["skill"]
         .dropna()
@@ -29,7 +25,6 @@ def load_market_skills():
         .str.strip()
     )
 
-    # Read every job's skills
     for row in jobs["skills_required"]:
 
         if pd.isna(row):
@@ -37,132 +32,243 @@ def load_market_skills():
 
         text = str(row).lower()
 
-        # Split on commas and spaces
-        words = re.split(r"[,/;|()\n]+|\s+", text)
+        words = re.split(
+            r"[,/;|()\n]+|\s+",
+            text
+        )
 
         for word in words:
 
             word = word.strip()
 
             if word in valid_skills:
+
                 market_skills.add(word)
 
     return market_skills
-# -------------------------------
-# Extract skills learned by user
-# -------------------------------
 
-def load_student_skills(market_skills):
-    """
-    Find technical skills present in the student's learning logs.
-    """
+
+# ---------------------------------
+# Load Student Skills
+# ---------------------------------
+
+def load_student_skills(
+        market_skills,
+        user_skills=None
+):
 
     student_skills = set()
 
-    # Read every log
+    # Streamlit Mode
+
+    if user_skills is not None:
+
+        for skill in user_skills:
+
+            skill = skill.lower().strip()
+
+            if skill in market_skills:
+
+                student_skills.add(skill)
+
+        return student_skills
+
+    # CSV Mode (Testing)
+
     for log in logs["Log"]:
 
         if pd.isna(log):
             continue
 
-        text = str(log).lower()
+        skill = str(log).lower().strip()
 
-        # Check every market skill
-        for skill in market_skills:
+        if skill in market_skills:
 
-            if skill.lower() in text:
-                student_skills.add(skill)
+            student_skills.add(skill)
 
     return student_skills
 
 
-# -------------------------------
-# Find Missing Skills
-# -------------------------------
+# ---------------------------------
+# Calculate Skill Gap
+# ---------------------------------
 
-def calculate_skill_gap(market_skills, student_skills):
+def calculate_skill_gap(
+        market_skills,
+        student_skills
+):
 
-    learned = market_skills.intersection(student_skills)
+    learned = market_skills.intersection(
+        student_skills
+    )
 
-    missing = market_skills.difference(student_skills)
+    missing = market_skills.difference(
+        student_skills
+    )
 
     return learned, missing
 
 
-# -------------------------------
-# Skill Match %
-# -------------------------------
+# ---------------------------------
+# Calculate Skill Match
+# ---------------------------------
 
-def calculate_alignment(market_skills, student_skills):
+def calculate_alignment(
+        market_skills,
+        student_skills
+):
 
     if len(market_skills) == 0:
+
         return 0
 
     return round(
-        len(student_skills) / len(market_skills) * 100,
+
+        (
+            len(student_skills)
+            / len(market_skills)
+        ) * 100,
+
         2
+
     )
 
 
-# -------------------------------
-# Display Report
-# -------------------------------
+# ---------------------------------
+# Suggested Next Skills
+# ---------------------------------
 
-def generate_report():
+def show_next_skills(
+        student_skills,
+        market_skills
+):
+
+    next_skills = []
+
+    missing = sorted(
+
+        list(
+
+            market_skills
+            - student_skills
+
+        )
+
+    )
+
+    for skill in missing[:5]:
+
+        estimated_match = round(
+
+            (
+
+                (
+                    len(student_skills)
+                    + 1
+
+                )
+
+                / len(market_skills)
+
+            ) * 100,
+
+            2
+
+        )
+
+        next_skills.append({
+
+            "skill": skill,
+
+            "estimated_match":
+                estimated_match
+
+        })
+
+    return next_skills
+
+# ---------------------------------
+# Generate Report
+# ---------------------------------
+
+def generate_report(user_skills=None):
 
     market_skills = load_market_skills()
 
-    student_skills = load_student_skills(market_skills)
+    student_skills = load_student_skills(
+        market_skills,
+        user_skills
+    )
 
     learned, missing = calculate_skill_gap(
         market_skills,
         student_skills
     )
 
-    score = calculate_alignment(
+    match_score = calculate_alignment(
         market_skills,
         student_skills
     )
 
-    print("\n========== SKILL MIRROR REPORT ==========\n")
+    next_skills = show_next_skills(
+        student_skills,
+        market_skills
+    )
 
-    print(f"Total Market Skills : {len(market_skills)}")
-    print(f"Skills Learned      : {len(learned)}")
-    print(f"Missing Skills      : {len(missing)}")
-    print(f"Skill Match         : {score}%")
+    report = {
 
-    print("\nTop Learned Skills\n")
-    
-    show_next_skills(student_skills, market_skills)
+    "summary": {
 
-    for skill in sorted(list(learned))[:20]:
-        print("✔", skill)
+        "total_market_skills": len(market_skills),
 
-    print("\nTop Missing Skills\n")
+        "skills_learned": len(learned),
 
-    for skill in sorted(list(missing))[:20]:
-        print("✘", skill)
+        "skill_match": match_score
+
+    },
+
+    "learned": sorted(list(learned))
+
+}
+
+    return report
 
 
-# -------------------------------
+# ---------------------------------
+# Display Report (Terminal Testing)
+# ---------------------------------
+
+def display_report(report):
+
+    print("\n")
+    print("=" * 50)
+    print("          SKILL MIRROR REPORT")
+    print("=" * 50)
+
+    print(f"\nTotal Market Skills : {report['summary']['total_market_skills']}")
+    print(f"Skills Learned      : {report['summary']['skills_learned']}")
+    print(f"Skill Match         : {report['summary']['skill_match']}%")
+
+    print("\n" + "=" * 50)
+    print("YOUR LEARNED SKILLS")
+    print("=" * 50)
+
+    if len(report["learned"]) == 0:
+
+        print("No matching technical skills found.")
+
+    else:
+
+        for skill in report["learned"]:
+
+            print(f"✔ {skill.title()}")
+
+# ---------------------------------
 # Main
-# -------------------------------
-# -----------------------------------
-# Show match increase after learning
-# -----------------------------------
-
-def show_next_skills(student_skills, market_skills):
-
-    missing = list(market_skills - student_skills)
-
-    print("\n========== NEXT SKILLS TO LEARN ==========\n")
-
-    for skill in missing[:5]:
-
-        new_match = ((len(student_skills) + 1) / len(market_skills)) * 100
-
-        print(f"Learn: {skill}")
-        print(f"Estimated Skill Match: {new_match:.2f}%\n")
+# ---------------------------------
 
 if __name__ == "__main__":
-    generate_report()
+
+    report = generate_report()
+
+    display_report(report)

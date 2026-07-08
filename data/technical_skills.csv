@@ -1,53 +1,274 @@
 skill
-Python
-Java
-C
-C++
-JavaScript
-TypeScript
-Go
-Rust
-Kotlin
-Swift
-PHP
-R
-NumPy
-Pandas
-Matplotlib
-Seaborn
-Scikit-learn
-TensorFlow
-PyTorch
-Keras
-XGBoost
-LightGBM
-SQL
-MySQL
-PostgreSQL
-MongoDB
-SQLite
-Redis
-HTML
-CSS
-React
-Angular
-Vue
-Flask
-Django
-FastAPI
-Node.js
-Express
-Docker
-Kubernetes
-AWS
-Azure
-GCP
-Jenkins
-GitHub Actions
-NLP
-Computer Vision
-OpenCV
-LangChain
-Hugging Face
-LLMs
-RAG
+python
+java
+c
+c++
+c#
+javascript
+typescript
+go
+rust
+kotlin
+swift
+php
+ruby
+r
+matlab
+scala
+perl
+dart
+lua
+shell scripting
+bash
+html
+css
+react
+angular
+vue.js
+next.js
+node.js
+express.js
+django
+flask
+fastapi
+spring
+spring boot
+asp.net
+laravel
+bootstrap
+tailwind css
+jquery
+android
+android studio
+ios
+flutter
+react native
+xamarin
+ionic
+sql
+mysql
+postgresql
+sqlite
+oracle
+sql server
+mongodb
+redis
+cassandra
+firebase
+mariadb
+dynamodb
+neo4j
+elasticsearch
+git
+github
+gitlab
+bitbucket
+docker
+kubernetes
+jenkins
+github actions
+terraform
+ansible
+nginx
+apache
+aws
+azure
+gcp
+ec2
+s3
+lambda
+pandas
+numpy
+matplotlib
+seaborn
+plotly
+scipy
+scikit-learn
+xgboost
+lightgbm
+catboost
+statsmodels
+openpyxl
+jupyter
+google colab
+machine learning
+deep learning
+artificial intelligence
+data analysis
+data science
+data visualization
+feature engineering
+model evaluation
+supervised learning
+unsupervised learning
+reinforcement learning
+nlp
+computer vision
+time series
+predictive analytics
+tensorflow
+keras
+pytorch
+opencv
+hugging face
+langchain
+llm
+generative ai
+transformers
+spacy
+nltk
+excel
+power bi
+tableau
+looker
+qlik sense
+rest api
+graphql
+json
+xml
+soap
+postman
+swagger
+oauth
+jwt
+linux
+ubuntu
+windows
+macos
+unix
+networking
+tcp/ip
+http
+https
+dns
+ssh
+cybersecurity
+ethical hacking
+penetration testing
+wireshark
+metasploit
+burp suite
+firewall
+encryption
+cryptography
+oop
+data structures
+algorithms
+design patterns
+multithreading
+operating systems
+computer networks
+dbms
+system design
+microservices
+pytest
+unittest
+selenium
+cypress
+junit
+testng
+figma
+canva
+adobe xd
+ui design
+ux design
+jira
+agile
+scrum
+kanban
+hadoop
+spark
+kafka
+airflow
+etl
+data warehouse
+snowflake
+databricks
+socket programming
+api development
+web scraping
+beautifulsoup
+regex
+csv
+yaml
+toml
+virtualization
+vmware
+virtualbox
+raspberry pi
+arduino
+embedded c
+verilog
+vhdl
+fpga
+iot
+streamlit
+gradio
+power query
+power pivot
+excel vba
+ms access
+linux administration
+npm
+yarn
+pnpm
+vite
+redux
+mobx
+zustand
+webpack
+babel
+socket.io
+rabbitmq
+grpc
+protobuf
+image processing
+signal processing
+digital electronics
+analog electronics
+pcb design
+proteus
+multisim
+ltspice
+computer graphics
+unity
+unreal engine
+blender
+three.js
+onnx
+cuda
+yolo
+object detection
+segmentation
+classification
+recommendation systems
+information retrieval
+vector database
+faiss
+pinecone
+chroma
+milvus
+prompt engineering
+rag
+fine tuning
+lora
+quantization
+mlops
+dvc
+mlflow
+wandb
+airbyte
+dbt
+clickhouse
+duckdb
+supabase
+prisma
+drizzle orm
+material ui
+chakra ui
+ant design
+electron
+tauri
+pwa
+websocket
+oauth2
