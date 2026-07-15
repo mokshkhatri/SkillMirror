@@ -52,6 +52,17 @@ from src.roadmap import generate_complete_roadmap
 
 
 # ---------------------------------
+# Import Market Analysis Functions
+# ---------------------------------
+
+from src.market_analysis import (
+    get_market_skill_frequency,
+    get_common_missing_skills,
+    calculate_market_readiness
+)
+
+
+# ---------------------------------
 # Page Configuration
 # ---------------------------------
 
@@ -244,7 +255,7 @@ if analyze_clicked:
 
 
         # ---------------------------------
-        # Get Real Job Recommendations
+        # Retrieve Top 15 Relevant Jobs
         # ---------------------------------
 
         with st.spinner(
@@ -256,7 +267,7 @@ if analyze_clicked:
                 df=jobs_df,
                 vectorizer=vectorizer,
                 tfidf_matrix=tfidf_matrix,
-                top_n=3
+                top_n=15
             )
 
 
@@ -278,6 +289,46 @@ if analyze_clicked:
             recommended_jobs=recommended_jobs,
             next_skill_limit=3
         )
+
+
+        # ---------------------------------
+        # Analyze Relevant Market Skills
+        # ---------------------------------
+
+        market_skill_frequency = (
+            get_market_skill_frequency(
+                analyzed_jobs
+            )
+        )
+
+        market_missing_skills = (
+            get_common_missing_skills(
+                skill_frequency=market_skill_frequency,
+                user_skills=final_skills,
+                limit=5
+            )
+        )
+
+        market_readiness = calculate_market_readiness(
+            skill_frequency=market_skill_frequency,
+            user_skills=final_skills
+        )
+
+
+        # Skills the user already has that are demanded
+        # in the top 15 relevant jobs
+        cleaned_user_skills = {
+            str(skill).strip().lower()
+            for skill in final_skills
+            if str(skill).strip()
+        }
+
+        market_strong_skills = [
+            skill
+            for skill, count
+            in market_skill_frequency.most_common()
+            if skill in cleaned_user_skills
+        ]
 
 
         # ---------------------------------
@@ -306,27 +357,29 @@ if analyze_clicked:
             ]
 
 
-        # Add career prediction to each card
+        # Add career prediction to all analyzed jobs
         for job in analyzed_jobs:
 
             job["career_prediction"] = career_name
 
 
         # ---------------------------------
-        # Display Recommended Jobs
+        # Show Only Top 3 Job Cards
         # ---------------------------------
+
+        display_jobs = analyzed_jobs[:3]
 
         st.markdown(
             "## Recommended Jobs"
         )
 
         job_columns = st.columns(
-            len(analyzed_jobs)
+            len(display_jobs)
         )
 
         for column, job in zip(
             job_columns,
-            analyzed_jobs
+            display_jobs
         ):
 
             with column:
@@ -337,34 +390,21 @@ if analyze_clicked:
 
 
         # ---------------------------------
-        # Build Dynamic Summary
+        # Market-Based Overall Summary
         # ---------------------------------
 
-        best_job = analyzed_jobs[0]
+        best_job = display_jobs[0]
 
-        strong_skills = best_job.get(
-            "learned_skills",
-            []
-        )
+        if market_missing_skills:
 
-        missing_skills = best_job.get(
-            "missing_skills",
-            []
-        )
-
-        next_skills = best_job.get(
-            "next_skills",
-            []
-        )
-
-        if next_skills:
-
-            next_priority = next_skills[0]
+            next_priority = (
+                market_missing_skills[0]
+            )
 
         else:
 
             next_priority = (
-                "No major skill gap"
+                "No major market skill gap"
             )
 
 
@@ -373,14 +413,14 @@ if analyze_clicked:
                 f"{best_job['job_title']} at "
                 f"{best_job['company_name']}"
             ),
-            strong_skills=strong_skills,
-            missing_skills=missing_skills[:3],
+            strong_skills=market_strong_skills,
+            missing_skills=market_missing_skills[:3],
             next_priority=next_priority
         )
 
 
         # ---------------------------------
-        # Dynamic Charts
+        # Dynamic Analytics
         # ---------------------------------
 
         career_chart_data = career_report.get(
@@ -389,20 +429,17 @@ if analyze_clicked:
         )
 
         render_charts(
-            skill_match=best_job.get(
-                "skill_match",
-                0
-            ),
+            skill_match=market_readiness,
             career_data=career_chart_data
         )
 
 
         # ---------------------------------
-        # Generate Dynamic Roadmap
+        # Market-Based Dynamic Roadmap
         # ---------------------------------
 
         roadmap_steps = generate_complete_roadmap(
-            missing_skills=missing_skills,
+            missing_skills=market_missing_skills,
             total_weeks=4
         )
 
@@ -419,6 +456,6 @@ if analyze_clicked:
             )
 
             st.success(
-                "You already possess all detected skills "
-                "required for the best matching job."
+                "You already possess the major skills "
+                "required across the relevant job market."
             )

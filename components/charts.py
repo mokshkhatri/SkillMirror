@@ -12,7 +12,7 @@ def render_charts(skill_match, career_data):
     # --------------------------------
     with left:
         with st.container(border=True):
-            st.markdown("### Skill Match Overview")
+            st.markdown("### Market Readiness")
 
             gauge_value = float(skill_match or 0)
 

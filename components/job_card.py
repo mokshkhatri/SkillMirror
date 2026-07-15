@@ -28,7 +28,7 @@ def render_job_card(job):
             st.caption(job["company_name"])
 
         with top_right:
-            st.success(f"{job['score']}% Match")
+            st.success(f"{job['score']}% \nRelevance")
 
         st.caption(
             f"{job['location']} • "
