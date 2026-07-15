@@ -2,11 +2,14 @@ import pandas as pd
 import difflib
 import re
 
+
 # ----------------------------------
 # Load Technical Skills Database
 # ----------------------------------
 
-technical_skills = pd.read_csv("data/technical_skills.csv")
+technical_skills = pd.read_csv(
+    "data/technical_skills.csv"
+)
 
 VALID_SKILLS = set(
     technical_skills["skill"]
@@ -22,14 +25,20 @@ VALID_SKILLS = set(
 
 def validate_skills(user_input):
     """
-    Takes user input as a string and returns:
-    1. Accepted skills
-    2. Suggested corrections
-    3. Ignored skills
+    Returns
+
+    accepted skills
+    suggested corrections
+    ignored skills
     """
 
-    # Split by commas or new lines
-    words = re.split(r"[,\n]+", user_input)
+    if user_input is None:
+        return [], {}, []
+
+    words = re.split(
+        r"[,\n;|/]+",
+        str(user_input)
+    )
 
     accepted = []
     suggestions = {}
@@ -44,7 +53,9 @@ def validate_skills(user_input):
 
         # Exact Match
         if skill in VALID_SKILLS:
+
             accepted.append(skill)
+
             continue
 
         # Closest Match
@@ -55,49 +66,108 @@ def validate_skills(user_input):
             cutoff=0.75
         )
 
-        if len(close_match) > 0:
+        if close_match:
+
             suggestions[skill] = close_match[0]
+
         else:
+
             ignored.append(skill)
 
-    return accepted, suggestions, ignored
+    return (
+        sorted(accepted),
+        suggestions,
+        sorted(ignored)
+    )
+
+
+# ----------------------------------
+# Auto Accept Suggestions
+# ----------------------------------
+
+def get_final_skills(user_input):
+    """
+    Returns the final skill list.
+
+    Example
+
+    Input:
+    Python, Excell, SQL
+
+    Output:
+    Python
+    Excel
+    SQL
+    """
+
+    accepted, suggestions, ignored = validate_skills(
+        user_input
+    )
+
+    final_skills = accepted.copy()
+
+    for corrected_skill in suggestions.values():
+
+        if corrected_skill not in final_skills:
+
+            final_skills.append(corrected_skill)
+
+    final_skills.sort()
+
+    return final_skills
 
 
 # ----------------------------------
 # Display Results
 # ----------------------------------
 
-def display_results(accepted, suggestions, ignored):
+def display_results(
+    accepted,
+    suggestions,
+    ignored
+):
 
-    print("\n==============================")
-    print("      SKILL VALIDATION")
-    print("==============================\n")
+    print("\n")
+    print("=" * 45)
+    print("        SKILL VALIDATION")
+    print("=" * 45)
 
-    print("Accepted Skills")
-    print("----------------")
+    print("\nAccepted Skills")
 
     if accepted:
+
         for skill in accepted:
+
             print("✔", skill.title())
+
     else:
+
         print("None")
 
     print("\nSuggested Corrections")
-    print("----------------------")
 
     if suggestions:
+
         for wrong, correct in suggestions.items():
-            print(f"{wrong.title()}  -->  {correct.title()}")
+
+            print(
+                f"{wrong.title()} → {correct.title()}"
+            )
+
     else:
+
         print("None")
 
     print("\nIgnored Skills")
-    print("----------------")
 
     if ignored:
+
         for skill in ignored:
+
             print("✘", skill.title())
+
     else:
+
         print("None")
 
 
@@ -107,19 +177,22 @@ def display_results(accepted, suggestions, ignored):
 
 if __name__ == "__main__":
 
-    print("\n========== Skill Validator ==========\n")
+    user_input = input(
+        "Enter Skills: "
+    )
 
-    print("Enter your skills.")
-    print("Separate them using commas.")
-    print("\nExample:")
-    print("Python, SQL, Excell, Tensor Flow, Football\n")
-
-    user_input = input("Enter Skills: ")
-
-    accepted, suggestions, ignored = validate_skills(user_input)
+    accepted, suggestions, ignored = validate_skills(
+        user_input
+    )
 
     display_results(
         accepted,
         suggestions,
         ignored
+    )
+
+    print("\nFinal Skills")
+
+    print(
+        get_final_skills(user_input)
     )
